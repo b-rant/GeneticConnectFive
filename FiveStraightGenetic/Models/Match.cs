@@ -16,10 +16,26 @@ namespace FiveStraightGenetic.Models
 
         public Chromosome Player1 { get; }
 
-        public int GameLengthInTurns { get; set; }
+        public int GameLengthInTurns { get; private set; }
 
-        public Guid WinningPlayer { get; set; }
+        public Guid WinningPlayer { get; private set; }
 
         public Game Game { get;}
+
+        /// <summary>
+        /// Sets the GameLengthInTurns and Determines Winning Players GUID Id
+        /// </summary>
+        public void DetermineWinner()
+        {
+            GameLengthInTurns = Game.TurnNumber;
+
+            if (Game.WinningPlayer.PlayerNumber == 0)
+            {
+                WinningPlayer = Player0.Id;
+                return;
+            }
+            WinningPlayer = Player1.Id;
+            return;
+        }
     }
 }

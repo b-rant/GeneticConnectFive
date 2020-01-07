@@ -26,12 +26,12 @@ namespace FiveStraightGenetic
 
             var player1Chromosome = new Chromosome()
             {
-                PotentialFiveMultiplyer = 6.5,
-                OffensiveMultiplyer = .8,
-                DefensiveMultiplyer = .8,
-                DrawMultiplyer = 25,
-                CardLocationDifferenceMultiplyer = .002,
-                CardValueMultiplyer = .01
+                PotentialFiveMultiplyer = 6.6942361843279734,
+                OffensiveMultiplyer = 0.29375629718124696,
+                DefensiveMultiplyer = 0.14618343950537194,
+                DrawMultiplyer = 19.241699209083663,
+                CardLocationDifferenceMultiplyer = 0.0018789321965905523,
+                CardValueMultiplyer = 0.0055330016140514061
             };
 
             PlayGame(player0Chromosome, player1Chromosome);

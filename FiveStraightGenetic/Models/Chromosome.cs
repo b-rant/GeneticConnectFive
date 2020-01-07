@@ -1,9 +1,11 @@
 ﻿using FiveStraightGenetic.Utility;
 using System;
+using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 
 namespace FiveStraightGenetic.Models
 {
-    public class Chromosome
+    public class Chromosome : IComparer<Chromosome>
     {
         private Random Random;
 
@@ -25,6 +27,8 @@ namespace FiveStraightGenetic.Models
 
         // Stats to track performace of Chromosome 
 
+        public int NumberOfGenerationsSurvived { get; private set; }
+
         public int NumberOfGamesPlayed { get; private set; }
 
         public int Wins { get; private set; }
@@ -41,9 +45,6 @@ namespace FiveStraightGenetic.Models
             var guid = Guid.NewGuid();
             Random = new Random(guid.GetHashCode());
             Id = guid;
-            Wins = 0;
-            SumOfGameLengthsInTurns = 0;
-            NumberOfGamesPlayed = 0;
             MutatePotentialFiveMultiplyer();
             MutateOffensiveMultiplyer();
             MutateDefensiveMultiplyer();
@@ -61,9 +62,7 @@ namespace FiveStraightGenetic.Models
             var guid = Guid.NewGuid();
             Random = new Random(guid.GetHashCode());
             Id = guid;
-            Wins = 0;
-            SumOfGameLengthsInTurns = 0;
-            NumberOfGamesPlayed = 0;
+            NumberOfGenerationsSurvived = ++toBeCoppied.NumberOfGenerationsSurvived;
             PotentialFiveMultiplyer = toBeCoppied.PotentialFiveMultiplyer;
             OffensiveMultiplyer = toBeCoppied.OffensiveMultiplyer;
             DefensiveMultiplyer = toBeCoppied.DefensiveMultiplyer;
@@ -82,9 +81,6 @@ namespace FiveStraightGenetic.Models
             var guid = Guid.NewGuid();
             Random = new Random(guid.GetHashCode());
             Id = guid;
-            Wins = 0;
-            SumOfGameLengthsInTurns = 0;
-            NumberOfGamesPlayed = 0;
             if (Random.NextDouble() >= .5)
                 PotentialFiveMultiplyer = crossoverA.PotentialFiveMultiplyer;
             else
@@ -119,37 +115,31 @@ namespace FiveStraightGenetic.Models
         /// <summary>
         /// This function will randomly mutate properties on the chromosome
         /// </summary>
-        public void RandomMutate()
+        public void Mutate()
         {
-            // Possible to mutate between 1 and 5 different properties
-            int mutations = Random.Next(Configuration._MinimumNumberOfMutations, Configuration._MaxNumberOfMutations);
-            for (int i = 0; i < mutations; i++)
+            if (GetRandomNumber(0,1) <= Configuration._MutationRate)
             {
-                int propToMutate = Random.Next(1, 7);
-
-                switch (propToMutate)
-                {
-                    case 1:
-                        MutatePotentialFiveMultiplyer();
-                        break;
-                    case 2:
-                        MutateOffensiveMultiplyer();
-                        break;
-                    case 3:
-                        MutateDefensiveMultiplyer();
-                        break;
-                    case 4:
-                        MutateDrawMultiplyer();
-                        break;
-                    case 5:
-                        MutateCardLocationDifferenceMultiplyer();
-                        break;
-                    case 6:
-                        MutateCardValueMultiplyer();
-                        break;
-                    default:
-                        break;
-                }
+                MutatePotentialFiveMultiplyer();
+            }
+            if (GetRandomNumber(0, 1) <= Configuration._MutationRate)
+            {
+                MutateOffensiveMultiplyer();
+            }
+            if (GetRandomNumber(0, 1) <= Configuration._MutationRate)
+            {
+                MutateDefensiveMultiplyer();
+            }
+            if (GetRandomNumber(0, 1) <= Configuration._MutationRate)
+            {
+                MutateDrawMultiplyer();
+            }
+            if (GetRandomNumber(0, 1) <= Configuration._MutationRate)
+            {
+                MutateCardLocationDifferenceMultiplyer();
+            }
+            if (GetRandomNumber(0, 1) <= Configuration._MutationRate)
+            {
+                MutateCardValueMultiplyer();
             }
         }
 
@@ -177,7 +167,7 @@ namespace FiveStraightGenetic.Models
             {
                 return 0;
             }
-            return SumOfGameLengthsInTurns / NumberOfGamesPlayed;
+            return (double)SumOfGameLengthsInTurns/NumberOfGamesPlayed;
         }
 
         /// <summary>
@@ -190,7 +180,7 @@ namespace FiveStraightGenetic.Models
             {
                 return 0;
             }
-            return Wins / NumberOfGamesPlayed;
+            return (double)Wins/NumberOfGamesPlayed;
         }
 
         // Private functions
@@ -230,5 +220,44 @@ namespace FiveStraightGenetic.Models
             return Random.NextDouble() * (maximum - minimum) + minimum;
         }
 
+        public int Compare(Chromosome x, Chromosome y)
+        {
+            double xRank = x.GetChromosomeRankValue();
+            double yRank = y.GetChromosomeRankValue();
+            double xAverage = x.GameLegthInTurnsAverage();
+            double yAverage = y.GameLegthInTurnsAverage();
+            // Sort by win percentage first
+            if (xRank < yRank)
+            {
+                return 1;
+            }
+            else if (xRank > yRank)
+            {
+                return -1;
+            }
+            // Then sort by number of survived generations if needed
+            else if (x.NumberOfGenerationsSurvived < y.NumberOfGenerationsSurvived)
+            {
+                return 1;
+            }
+            else if (x.NumberOfGenerationsSurvived > y.NumberOfGenerationsSurvived)
+            {
+                return -1;
+            }
+            // Then sort by game length if needed
+            else if (xAverage > yAverage)
+            {
+                return 1;
+            }
+            else if (xAverage < yAverage)
+            {
+                return -1;
+            }
+            // Otherwise it is equal
+            else
+            {
+                return 0;
+            }
+        }
     }
 }

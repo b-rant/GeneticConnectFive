@@ -1,5 +1,6 @@
 ﻿using FiveStraightGame.Models;
 using FiveStraightGenetic.Models;
+using FiveStraightGenetic.Utility;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,11 +10,11 @@ namespace FiveStraightGenetic
 {
     public class LocationValuator
     {
-        private Chromosome _Chromosome;
+        private Chromosome Chromosome;
 
         public LocationValuator(Chromosome chromosome)
         {
-            _Chromosome = chromosome;
+            Chromosome = chromosome;
         }
 
         public double CalculateLocationValue(List<BoardLocation> board, int location, int playerNum)
@@ -113,11 +114,11 @@ namespace FiveStraightGenetic
 
             if(playerNum == 0)
             {
-                weightedRowValue = player1Value * _Chromosome.OffensiveMultiplyer + player2Value * _Chromosome.DefensiveMultiplyer;
+                weightedRowValue = player1Value * Chromosome.OffensiveMultiplyer + player2Value * Chromosome.DefensiveMultiplyer;
             }
             else
             {
-                weightedRowValue = player2Value * _Chromosome.OffensiveMultiplyer + player1Value * _Chromosome.DefensiveMultiplyer;
+                weightedRowValue = player2Value * Chromosome.OffensiveMultiplyer + player1Value * Chromosome.DefensiveMultiplyer;
             }
 
             return weightedRowValue;
@@ -132,7 +133,7 @@ namespace FiveStraightGenetic
             var postPlayValue = CalculateRowValue2(postPlayRowValues, playerNum);
 
             // Return the difference plus some extra to keep positive numbers
-            return postPlayValue - prePlayValue + _Chromosome.PotentialFiveMultiplyer*10;
+            return postPlayValue - prePlayValue + Chromosome.PotentialFiveMultiplyer * Configuration._LocationValueBump;
         }
 
         private double CalculateRowValue2(List<int> rowValues, int playerNum)
@@ -164,7 +165,7 @@ namespace FiveStraightGenetic
             double value = 0.0;
             foreach (var score in chunkScores)
             {
-                value += Math.Pow(_Chromosome.PotentialFiveMultiplyer, score);
+                value += Math.Pow(Chromosome.PotentialFiveMultiplyer, score);
             }
 
             return value;

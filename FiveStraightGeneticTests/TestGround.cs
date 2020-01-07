@@ -1,7 +1,9 @@
 using FiveStraightGame;
 using FiveStraightGenetic;
 using FiveStraightGenetic.Models;
+using FiveStraightGenetic.Utility;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -75,6 +77,62 @@ namespace FiveStraightGeneticTests
             Assert.IsNotNull(values);
         }
 
+        [TestMethod]
+        public void TestLengthofGenerationRun()
+        {
+            var size = Configuration.GenerationSize();
+
+            List<Chromosome> inputGeneration = new List<Chromosome>();
+            for (int i = 0; i < Configuration.GenerationSize(); i++)
+            {
+                inputGeneration.Add(new Chromosome());
+            }
+
+            GeneticManager geneticManager = new GeneticManager();
+
+            var watch = new System.Diagnostics.Stopwatch();
+
+            watch.Start();
+
+            inputGeneration = geneticManager.ProcessGeneration(inputGeneration);
+
+            watch.Stop();
+
+            var time = watch.ElapsedMilliseconds;
+
+            Assert.AreEqual(Configuration.GenerationSize(), inputGeneration.Count);
+        }
+
+        [TestMethod]
+        public void RunTrainingTest()
+        {
+            var size = Configuration.GenerationSize();
+
+            List<Chromosome> inputGeneration = new List<Chromosome>();
+            for (int i = 0; i < Configuration.GenerationSize(); i++)
+            {
+                inputGeneration.Add(new Chromosome());
+            }
+
+            GeneticManager geneticManager = new GeneticManager();
+
+            var watch = new System.Diagnostics.Stopwatch();
+
+            watch.Start();
+
+            int rounds = 100;
+            while (rounds != 0)
+            {
+                inputGeneration = geneticManager.ProcessGeneration(inputGeneration);
+                rounds--;
+            }
+
+            watch.Stop();
+
+            var time = watch.ElapsedMilliseconds;
+
+            Assert.AreEqual(Configuration.GenerationSize(), inputGeneration.Count);
+        }
 
 
         [TestMethod]

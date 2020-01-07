@@ -1,5 +1,6 @@
 ﻿using FiveStraightGame.Models;
 using FiveStraightGenetic.Models;
+using FiveStraightGenetic.Utility;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,7 +10,6 @@ namespace FiveStraightGenetic
     public class PlayValuator
     {
         private readonly Chromosome Chromosome;
-        private const int StandardHandSize = 4;
 
         public PlayValuator(Chromosome chromosome)
         {
@@ -33,7 +33,7 @@ namespace FiveStraightGenetic
             }
 
             // Calculate Draw value
-            int missingCards = StandardHandSize - player.Hand.Count;
+            int missingCards = Configuration._HandSize - player.Hand.Count;
             double drawValue = Math.Pow(Chromosome.DrawMultiplyer, missingCards);
 
             // Re-Weigh board options based on difference between board location and required card value to play
@@ -46,8 +46,8 @@ namespace FiveStraightGenetic
                     if (card <= play.Key)
                     {
                         // First modify value based on Card value multiplyer
-                        // Adding 50 here to make larger cards even more desireable to spend
-                        double cardValuePercentWeight = (card + 50) * Chromosome.CardValueMultiplyer;
+                        // Adding _LargeCardPreference here to make larger cards even more desireable to spend
+                        double cardValuePercentWeight = (card + Configuration._LargeCardPreference) * Chromosome.CardValueMultiplyer;
 
                         // Determine the card difference value multiplyer
                         int difference = play.Key - card;
@@ -62,7 +62,7 @@ namespace FiveStraightGenetic
 
             // Determine Play
             var topPlayOption = weightedPlayOptions.OrderByDescending(x => x.Value).FirstOrDefault();
-            if (topPlayOption.Value >= drawValue || player.Hand.Count == 4)
+            if (topPlayOption.Value >= drawValue || player.Hand.Count == Configuration._HandSize)
             {
                 playDecision.Draw = false;
                 playDecision.PlayedLocationNumber = topPlayOption.Key;
